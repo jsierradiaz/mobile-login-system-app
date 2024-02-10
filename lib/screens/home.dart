@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
       body: const Center(
         child: Text('Welcome to the home screen!'),
       ),
-      drawer: const CustomDrawer(),
+      drawer: CustomDrawer(),
     );
   }
 }

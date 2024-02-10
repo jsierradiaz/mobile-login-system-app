@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:mobile_login_system_app/screens/home.dart';
+import 'package:mobile_login_system_app/services/auth_service.dart';
+import 'package:mobile_login_system_app/utils/secrets.dart';
 import 'package:mobile_login_system_app/widgets/custom_password_field.dart';
 import 'package:mobile_login_system_app/widgets/custom_textfield.dart';
 import 'package:realm/realm.dart';
@@ -20,9 +22,9 @@ class CreateAccountState extends State<CreateAccount> {
   final TextEditingController confirmPasswordController =
       TextEditingController();
 
-  final app = App(AppConfiguration('loginapp-jlkjb'));
-
   Future<void> _createAccount(BuildContext context) async {
+    final realmAppId = Secrets.realmAppId;
+
     // Handle account creation logic here
     String fullName = fullNameController.text;
     String email = emailController.text;
@@ -83,43 +85,32 @@ class CreateAccountState extends State<CreateAccount> {
       return;
     }
 
-    // Create account
-    EmailPasswordAuthProvider authProvider = EmailPasswordAuthProvider(app);
-    await authProvider.registerUser(email, password);
+    // Register a user
 
-    //final user = app.currentUser;
-    //final updatedUserData = {'fullName': fullName, 'phoneNumber': phone};
+    var authService = AuthService(realmAppId);
+    try {
+      User user = await authService.register(email, password);
+      // Navigate to home screen
 
-    //final functionResponse =
-    //await user?.functions.call('writeCustomUserData', [updatedUserData]);
-
-    // Login the user upon successful account creation
-    final emailPwCredentials = Credentials.emailPassword(email, password);
-
-    app.logIn(emailPwCredentials).then((value) {
-      // If all validations pass, login user
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Account created successfully. You are now logged in.'),
+          content: Text('Account created successfully'),
           backgroundColor: Colors.green,
         ),
       );
-
-      // Navigate to home screen
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => HomeScreen()),
         (Route<dynamic> route) => false,
       );
-    }).catchError((error) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content:
-              Text('There was an error creating account. Please try again.'),
+          content: Text('Failed to create account'),
           backgroundColor: Colors.red,
         ),
       );
-    });
+    }
   }
 
   @override

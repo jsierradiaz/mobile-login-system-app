@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:mobile_login_system_app/screens/create_account.dart';
 import 'package:mobile_login_system_app/screens/home.dart';
+import 'package:mobile_login_system_app/services/auth_service.dart';
 import 'package:mobile_login_system_app/utils/secrets.dart';
 import 'package:mobile_login_system_app/widgets/custom_password_field.dart';
 import 'package:mobile_login_system_app/widgets/custom_textfield.dart';
@@ -18,18 +19,10 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   String realmAppId = Secrets.realmAppId;
 
-  late App app;
-
-  @override
-  void initState() {
-    super.initState();
-    app = App(AppConfiguration(realmAppId));
-  }
-
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _login() {
+  Future<void> _login() async {
     // Handle login logic here
     String email = emailController.text;
     String password = passwordController.text;
@@ -58,10 +51,17 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final emailPwCredentials = Credentials.emailPassword(email, password);
+    var authService = AuthService(realmAppId);
 
-    app.logIn(emailPwCredentials).then((value) {
-      // If all validations pass, login user
+    try {
+      User user = await authService.login(email, password);
+      // final customUserData = user.customData;
+
+      // print('User ID: ${user.id}');
+      // print('User name: ${user.profile.name}');
+      // print('User email: ${user.profile.email}');
+      // print('User phone: ${customUserData?['phone']}');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Login successful'),
@@ -69,20 +69,21 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
       );
 
-      // Navigate to home screen
+      // // Navigate to home screen
+      // ignore: use_build_context_synchronously
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (Route<dynamic> route) => false,
       );
-    }).catchError((error) {
+    } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Ivalid email or password'),
+          content: Text('Invalid email or password'),
           backgroundColor: Colors.red,
         ),
       );
-    });
+    }
   }
 
   @override
