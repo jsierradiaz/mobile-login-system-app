@@ -7,8 +7,6 @@ import 'package:mobile_login_system_app/utils/secrets.dart';
 import 'package:mobile_login_system_app/widgets/custom_password_field.dart';
 import 'package:mobile_login_system_app/widgets/custom_textfield.dart';
 
-import 'package:realm/realm.dart';
-
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -54,13 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     var authService = AuthService(realmAppId);
 
     try {
-      User user = await authService.login(email, password);
-      // final customUserData = user.customData;
-
-      // print('User ID: ${user.id}');
-      // print('User name: ${user.profile.name}');
-      // print('User email: ${user.profile.email}');
-      // print('User phone: ${customUserData?['phone']}');
+      await authService.login(email, password);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

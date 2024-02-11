@@ -89,7 +89,7 @@ class CreateAccountState extends State<CreateAccount> {
 
     var authService = AuthService(realmAppId);
     try {
-      User user = await authService.register(email, password);
+      await authService.register(email, password);
       // Navigate to home screen
 
       ScaffoldMessenger.of(context).showSnackBar(
