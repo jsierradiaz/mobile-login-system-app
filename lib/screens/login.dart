@@ -21,6 +21,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> _login() async {
+    var navigator = Navigator.of(context);
+    var messager = ScaffoldMessenger.of(context);
+
     // Handle login logic here
     String email = emailController.text;
     String password = passwordController.text;
@@ -54,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await authService.login(email, password);
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messager.showSnackBar(
         const SnackBar(
           content: Text('Login successful'),
           backgroundColor: Colors.green,
@@ -62,14 +65,12 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       // // Navigate to home screen
-      // ignore: use_build_context_synchronously
-      Navigator.pushAndRemoveUntil(
-        context,
+      navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const HomeScreen()),
         (Route<dynamic> route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messager.showSnackBar(
         const SnackBar(
           content: Text('Invalid email or password'),
           backgroundColor: Colors.red,

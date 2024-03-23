@@ -5,7 +5,6 @@ import 'package:mobile_login_system_app/services/auth_service.dart';
 import 'package:mobile_login_system_app/utils/secrets.dart';
 import 'package:mobile_login_system_app/widgets/custom_password_field.dart';
 import 'package:mobile_login_system_app/widgets/custom_textfield.dart';
-import 'package:realm/realm.dart';
 
 class CreateAccount extends StatefulWidget {
   const CreateAccount({Key? key}) : super(key: key);
@@ -24,6 +23,9 @@ class CreateAccountState extends State<CreateAccount> {
 
   Future<void> _createAccount(BuildContext context) async {
     final realmAppId = Secrets.realmAppId;
+
+    var navigator = Navigator.of(context);
+    var messager = ScaffoldMessenger.of(context);
 
     // Handle account creation logic here
     String fullName = fullNameController.text;
@@ -92,19 +94,18 @@ class CreateAccountState extends State<CreateAccount> {
       await authService.register(email, password);
       // Navigate to home screen
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      messager.showSnackBar(
         const SnackBar(
           content: Text('Account created successfully'),
           backgroundColor: Colors.green,
         ),
       );
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
         (Route<dynamic> route) => false,
       );
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messager.showSnackBar(
         const SnackBar(
           content: Text('Failed to create account'),
           backgroundColor: Colors.red,
